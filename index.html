@@ -23,7 +23,7 @@ const code = document.getElementById('code').value; // Nieuw veld
 resultaatDiv.innerText = "Consultant aan het denken...";
 
 try {
-const res = await fetch('https://my-n8n.nl/webhook/product-consultant', {
+const res = await fetch('https://my-n8n.nl/webhook-test/product-consultant', {
 method: 'POST',
 body: JSON.stringify({idee: idee, code: code}), // Code meesturen
 headers: {'Content-Type': 'application/json'}
