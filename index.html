@@ -1,3 +1,16 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Consultant</title>
+    <style>body { font-family: sans-serif; padding: 20px; }</style>
+</head>
+<body>
+    <h1>Product Consultant</h1>
+    <textarea id="idee" style="width: 100%; height: 100px;"></textarea><br>
+    <button onclick="stuurIdee()">Valideer mijn idee</button>
+    <pre id="resultaat"></pre>
+
 <script>
 async function stuurIdee() {
 const resultaatDiv = document.getElementById('resultaat');
@@ -27,3 +40,12 @@ resultaatDiv.innerText = "Fout bij laden: check de Console (Rechtermuisknop > In
 }
 }
 </script>
+
+</body>
+</html>
+
+
+
+
+
+
