@@ -27,33 +27,42 @@
     </div>
 
     <script>
-    async function stuurIdee() {
-        const div = document.getElementById('resultaat');
-        const idee = document.getElementById('idee').value;
-        const code = document.getElementById('code').value;
-        div.innerHTML = "Validating strategy...";
-        
-        try {
-            const res = await fetch('https://my-n8n.nl/webhook/product-consultant', {
-                method: 'POST',
-                body: JSON.stringify({idee: idee, code: code}),
-                headers: {'Content-Type': 'application/json'}
-            });
-            const data = await res.json();
-            const content = typeof data.output === 'string' ? JSON.parse(data.output) : data;
+ async function stuurIdee() {
+const div = document.getElementById('resultaat');
+const idee = document.getElementById('idee').value;
+const code = document.getElementById('code').value;
+div.innerHTML = "Consultant aan het denken...";
 
-            div.innerHTML = `
-                <div class="result-card">
-                    <h3>${content.concept_naam}</h3>
-                    <p><strong>Probleem & Oplossing:</strong><br>${content.probleem_oplossing}</p>
-                    <p><strong>Doelgroep:</strong><br>${content.doelgroep_beschrijving}</p>
-                    <p><strong>Belangrijkste Risico:</strong><br>${content.belangrijkste_risico}</p>
-                </div>
-            `;
-        } catch (error) {
-            div.innerHTML = "Auth error or server timeout. Try again!";
-        }
-    }
+try {
+const res = await fetch('https://my-n8n.nl/webhook/product-consultant', {
+method: 'POST',
+body: JSON.stringify({idee: idee, code: code}),
+headers: {'Content-Type': 'application/json'}
+});
+
+const data = await res.json();
+
+// CHECK: Is de code fout?
+if (data.error) {
+div.innerHTML = `<p style="color:red; font-weight:bold;">${data.error}</p>`;
+return;
+}
+
+const content = typeof data.output === 'string' ? JSON.parse(data.output) : data;
+
+div.innerHTML = `
+<div class="result-card">
+<h3>${content.concept_naam || 'Geen naam'}</h3>
+<p><strong>Probleem & Oplossing:</strong><br>${content.probleem_oplossing || 'Geen data'}</p>
+<p><strong>Doelgroep:</strong><br>${content.doelgroep_beschrijving || 'Geen data'}</p>
+<p><strong>Belangrijkste Risico:</strong><br>${content.belangrijkste_risico || 'Geen data'}</p>
+</div>
+`;
+} catch (error) {
+div.innerHTML = "Server fout of geen verbinding.";
+}
+}
+
     </script>
 </body>
 </html>
