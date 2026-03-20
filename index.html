@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Product Consultant v1.0.2</h1>
+        <h1>Product Consultant v1.0.3</h1>
         <select id="toolType">
             <option value="business-case">Business Case Generator</option>
             <option value="persona">Persona Generator</option>
@@ -42,12 +42,16 @@
             const data = await res.json();
             if (data.error) { div.innerHTML = `<p style="color:red; font-weight:bold;">${data.error}</p>`; return; }
             
-            const content = typeof data.output === 'string' ? JSON.parse(data.output) : data;
+            // Verwerk JSON antwoord - met 'cleanup'
+            let rawOutput = typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
+            rawOutput = rawOutput.replace(/```json/g, '').replace(/```/g, '').trim();
+            const content = JSON.parse(rawOutput);
             
             // Render logica voor Business Case of Persona
-            if (content.user_personas) {
+            if (content.user_personas || content.personas) {
                 let html = "<h3>Gegenereerde Persona's</h3>";
-                content.user_personas.forEach(p => {
+                const pList = content.user_personas || content.personas;
+                pList.forEach(p => {
                     html += `
                     <div class="result-card">
                         <h4>👤 ${p.naam_persona}</h4>
@@ -57,6 +61,7 @@
                 });
                 div.innerHTML = html;
             } else if (content.concept_naam) {
+                // Business Case rendering
                 div.innerHTML = `
                     <div class="result-card">
                         <h3>${content.concept_naam}</h3>
@@ -70,7 +75,7 @@
             }
         } catch (e) { 
             console.error(e);
-            div.innerText = "Fout bij de validatie. Check de console."; 
+            div.innerText = "Fout bij de validatie (check console)."; 
         }
     }
     </script>
