@@ -7,75 +7,41 @@
         body { font-family: 'Segoe UI', system-ui; padding: 40px; background: #f4f7f6; }
         .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         select, textarea, input { width: 100%; margin-bottom: 15px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .result-card { margin-top: 20px; padding: 20px; background: #fff; border-left: 5px solid #007bff; border-radius: 4px; border: 1px solid #ddd; white-space: pre-wrap; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .result-card { margin-top: 20px; padding: 20px; background: #fff; border-left: 5px solid #28a745; border-radius: 4px; border: 1px solid #ddd; white-space: pre-wrap; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Product Consultant v1.0.3</h1>
+        <h1>AI IdeaFlow v1.0.4</h1>
         <select id="toolType">
             <option value="business-case">Business Case Generator</option>
             <option value="persona">Persona Generator</option>
         </select>
         <textarea id="idee" placeholder="Beschrijf je productidee..."></textarea>
-        <input type="password" id="code" placeholder="Voer je toegangscode in">
+        <input type="password" id="code" placeholder="Voer je toegangscode in voor volledige toegang">
         <button onclick="stuurIdee()">Generate strategy</button>
         <div id="resultaat"></div>
     </div>
-
     <script>
     async function stuurIdee() {
         const div = document.getElementById('resultaat');
-        const tool = document.getElementById('toolType').value;
-        const idee = document.getElementById('idee').value;
-        const code = document.getElementById('code').value;
         div.innerText = "Consultant aan het werk...";
-        
+        const bodyData = {
+            idee: document.getElementById('idee').value,
+            code: document.getElementById('code').value,
+            type: document.getElementById('toolType').value
+        };
         try {
             const res = await fetch('https://my-n8n.nl/webhook/product-consultant', {
                 method: 'POST',
-                body: JSON.stringify({idee: idee, code: code, type: tool}),
+                body: JSON.stringify(bodyData),
                 headers: {'Content-Type': 'application/json'}
             });
-            
             const data = await res.json();
-            if (data.error) { div.innerHTML = `<p style="color:red; font-weight:bold;">${data.error}</p>`; return; }
-            
-            // Verwerk JSON antwoord - met 'cleanup'
-            let rawOutput = typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
-            rawOutput = rawOutput.replace(/```json/g, '').replace(/```/g, '').trim();
-            const content = JSON.parse(rawOutput);
-            
-            // Render logica voor Business Case of Persona
-            if (content.user_personas || content.personas) {
-                let html = "<h3>Gegenereerde Persona's</h3>";
-                const pList = content.user_personas || content.personas;
-                pList.forEach(p => {
-                    html += `
-                    <div class="result-card">
-                        <h4>👤 ${p.naam_persona}</h4>
-                        <p><strong>Beroep:</strong> ${p.demografie.beroep}, ${p.demografie.locatie}</p>
-                        <p><strong>Doelen:</strong> ${p.doelen_frustraties.doelen.join(', ')}</p>
-                    </div>`;
-                });
-                div.innerHTML = html;
-            } else if (content.concept_naam) {
-                // Business Case rendering
-                div.innerHTML = `
-                    <div class="result-card">
-                        <h3>${content.concept_naam}</h3>
-                        <p><strong>Probleem/Oplossing:</strong><br>${content.probleem_oplossing}</p>
-                        <p><strong>Doelgroep:</strong><br>${content.doelgroep_beschrijving}</p>
-                        <p><strong>Risico:</strong><br>${content.belangrijkste_risico}</p>
-                    </div>
-                `;
-            } else {
-                div.innerHTML = `<div class="result-card"><pre>${JSON.stringify(content, null, 2)}</pre></div>`;
-            }
-        } catch (e) { 
-            console.error(e);
-            div.innerText = "Fout bij de validatie (check console)."; 
+            div.innerHTML = `<div class="result-card"><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+        } catch (e) {
+            div.innerText = "Fout bij de validatie.";
         }
     }
     </script>
