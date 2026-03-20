@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Product Consultant v1.0.1</h1>
+        <h1>Product Consultant v1.0.2</h1>
         <select id="toolType">
             <option value="business-case">Business Case Generator</option>
             <option value="persona">Persona Generator</option>
@@ -38,14 +38,40 @@
                 body: JSON.stringify({idee: idee, code: code, type: tool}),
                 headers: {'Content-Type': 'application/json'}
             });
-            const data = await res.json();
-            if (data.error) { div.innerHTML = `<p style="color:red">${data.error}</p>`; return; }
             
-            // Verwerk JSON antwoord
+            const data = await res.json();
+            if (data.error) { div.innerHTML = `<p style="color:red; font-weight:bold;">${data.error}</p>`; return; }
+            
             const content = typeof data.output === 'string' ? JSON.parse(data.output) : data;
             
-            div.innerHTML = `<div class="result-card"><h3>Resultaat</h3><pre>${JSON.stringify(content, null, 2)}</pre></div>`;
-        } catch (e) { div.innerText = "Fout bij de validatie."; }
+            // Render logica voor Business Case of Persona
+            if (content.user_personas) {
+                let html = "<h3>Gegenereerde Persona's</h3>";
+                content.user_personas.forEach(p => {
+                    html += `
+                    <div class="result-card">
+                        <h4>👤 ${p.naam_persona}</h4>
+                        <p><strong>Beroep:</strong> ${p.demografie.beroep}, ${p.demografie.locatie}</p>
+                        <p><strong>Doelen:</strong> ${p.doelen_frustraties.doelen.join(', ')}</p>
+                    </div>`;
+                });
+                div.innerHTML = html;
+            } else if (content.concept_naam) {
+                div.innerHTML = `
+                    <div class="result-card">
+                        <h3>${content.concept_naam}</h3>
+                        <p><strong>Probleem/Oplossing:</strong><br>${content.probleem_oplossing}</p>
+                        <p><strong>Doelgroep:</strong><br>${content.doelgroep_beschrijving}</p>
+                        <p><strong>Risico:</strong><br>${content.belangrijkste_risico}</p>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `<div class="result-card"><pre>${JSON.stringify(content, null, 2)}</pre></div>`;
+            }
+        } catch (e) { 
+            console.error(e);
+            div.innerText = "Fout bij de validatie. Check de console."; 
+        }
     }
     </script>
 </body>
