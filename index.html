@@ -2,67 +2,51 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>product consultant| Turn Ideas into Action</title>
+    <title>Product Consultant | AI Strategy</title>
     <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; background: #fdfdfd; color: #333; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 40px; border-radius: 16px; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        h1 { color: #007bff; margin-bottom: 5px; }
-        h2 { font-size: 1.2em; color: #666; margin-bottom: 30px; }
-        textarea { width: 100%; height: 150px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; padding: 15px; font-size: 16px; }
-        input { width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #ddd; }
+        body { font-family: 'Segoe UI', system-ui; padding: 40px; background: #f4f7f6; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        select, textarea, input { width: 100%; margin-bottom: 15px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .result-card { margin-top: 30px; padding: 25px; background: #f8f9fa; border-left: 5px solid #007bff; border-radius: 8px; }
+        .result-card { margin-top: 20px; padding: 20px; background: #fff; border-left: 5px solid #007bff; border-radius: 4px; border: 1px solid #ddd; white-space: pre-wrap; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>product consultant</h1>
-        <h2>Turn Ideas into Action. The AI-powered companion for product teams and startups.</h2>
-        
+        <h1>Product Consultant</h1>
+        <select id="toolType">
+            <option value="business-case">Business Case Generator</option>
+            <option value="persona">Persona Generator</option>
+        </select>
         <textarea id="idee" placeholder="Beschrijf je productidee..."></textarea>
-        <input type="password" id="code" placeholder="Voer je toegangscode in">
+        <input type="password" id="code" placeholder="Toegangscode">
         <button onclick="stuurIdee()">Generate strategy</button>
-        
         <div id="resultaat"></div>
     </div>
 
     <script>
- async function stuurIdee() {
-const div = document.getElementById('resultaat');
-const idee = document.getElementById('idee').value;
-const code = document.getElementById('code').value;
-div.innerHTML = "Consultant aan het denken...";
-
-try {
-const res = await fetch('https://my-n8n.nl/webhook/product-consultant', {
-method: 'POST',
-body: JSON.stringify({idee: idee, code: code}),
-headers: {'Content-Type': 'application/json'}
-});
-
-const data = await res.json();
-
-// CHECK: Is de code fout?
-if (data.error) {
-div.innerHTML = `<p style="color:red; font-weight:bold;">${data.error}</p>`;
-return;
-}
-
-const content = typeof data.output === 'string' ? JSON.parse(data.output) : data;
-
-div.innerHTML = `
-<div class="result-card">
-<h3>${content.concept_naam || 'Geen naam'}</h3>
-<p><strong>Probleem & Oplossing:</strong><br>${content.probleem_oplossing || 'Geen data'}</p>
-<p><strong>Doelgroep:</strong><br>${content.doelgroep_beschrijving || 'Geen data'}</p>
-<p><strong>Belangrijkste Risico:</strong><br>${content.belangrijkste_risico || 'Geen data'}</p>
-</div>
-`;
-} catch (error) {
-div.innerHTML = "Server fout of geen verbinding.";
-}
-}
-
+    async function stuurIdee() {
+        const div = document.getElementById('resultaat');
+        const tool = document.getElementById('toolType').value;
+        const idee = document.getElementById('idee').value;
+        const code = document.getElementById('code').value;
+        div.innerText = "Consultant aan het werk...";
+        
+        try {
+            const res = await fetch('https://my-n8n.nl/webhook/product-consultant', {
+                method: 'POST',
+                body: JSON.stringify({idee: idee, code: code, type: tool}),
+                headers: {'Content-Type': 'application/json'}
+            });
+            const data = await res.json();
+            if (data.error) { div.innerHTML = `<p style="color:red">${data.error}</p>`; return; }
+            
+            // Verwerk JSON antwoord
+            const content = typeof data.output === 'string' ? JSON.parse(data.output) : data;
+            
+            div.innerHTML = `<div class="result-card"><h3>Resultaat</h3><pre>${JSON.stringify(content, null, 2)}</pre></div>`;
+        } catch (e) { div.innerText = "Fout bij de validatie."; }
+    }
     </script>
 </body>
 </html>
