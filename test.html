@@ -960,29 +960,154 @@
     setStep(0);
   };
 
-  // ─── WEBHOOK FUNCTIE (origineel, licht aangepast voor wizard) ───
-  async function stuurIdee() {
-    const div = document.getElementById('resultaat');
-    const loading = document.getElementById('wizLoading');
-    const meta = document.getElementById('wizMeta');
+  // ─── CHIP ICONS & KLEUREN per gebied ───
+  const CHIP_CONFIG = {
+    'Businessmodel':           { icon:'🏗️', color:'purple' },
+    'Value propositie':        { icon:'💎', color:'teal'   },
+    'Doelgroep & personas':    { icon:'👥', color:'blue'   },
+    'Marktgrootte':            { icon:'📊', color:'amber'  },
+    'Concurrentieanalyse':     { icon:'🔍', color:'coral'  },
+    'Go-to-market':            { icon:'🚀', color:'teal'   },
+    'Financiën':               { icon:'💰', color:'amber'  },
+    'Risico-analyse':          { icon:'⚠️', color:'red'    },
+    'Legal & compliance':      { icon:'⚖️', color:'purple' },
+    'User story':              { icon:'📝', color:'teal'   },
+    'Klantbehoefte':           { icon:'🎯', color:'blue'   },
+    'Acceptance criteria':     { icon:'✅', color:'teal'   },
+    'Concurrenten':            { icon:'🔍', color:'coral'  },
+    'Roadmap fit':             { icon:'🛣️', color:'purple' },
+    'Technische haalbaarheid': { icon:'⚙️', color:'amber'  },
+    'KPIs & succes':           { icon:'📈', color:'blue'   },
+    'Risicos':                 { icon:'⚠️', color:'red'    },
+  };
 
-    // Summary tonen
+  const COLOR_STYLES = {
+    purple: { bg:'rgba(124,107,242,0.08)', border:'rgba(124,107,242,0.25)', tag:'rgba(124,107,242,0.15)', tagText:'#a98fff' },
+    teal:   { bg:'rgba(61,219,198,0.07)',  border:'rgba(61,219,198,0.25)',  tag:'rgba(61,219,198,0.15)',  tagText:'#3ddbc6' },
+    blue:   { bg:'rgba(55,138,221,0.07)',  border:'rgba(55,138,221,0.25)',  tag:'rgba(55,138,221,0.15)',  tagText:'#7ab8ef' },
+    amber:  { bg:'rgba(186,117,23,0.07)',  border:'rgba(186,117,23,0.25)',  tag:'rgba(186,117,23,0.15)',  tagText:'#efb847' },
+    coral:  { bg:'rgba(216,90,48,0.07)',   border:'rgba(216,90,48,0.25)',   tag:'rgba(216,90,48,0.15)',   tagText:'#f0896b' },
+    red:    { bg:'rgba(162,45,45,0.07)',   border:'rgba(162,45,45,0.25)',   tag:'rgba(162,45,45,0.15)',   tagText:'#f08080' },
+    purple: { bg:'rgba(124,107,242,0.08)', border:'rgba(124,107,242,0.25)', tag:'rgba(124,107,242,0.15)', tagText:'#a98fff' },
+  };
+
+  // ─── RENDER FUNCTIES per inhoudstype ───
+  function renderGebiedCard(naam, data) {
+    const cfg = CHIP_CONFIG[naam] || { icon:'📋', color:'purple' };
+    const cs  = COLOR_STYLES[cfg.color] || COLOR_STYLES.purple;
+
+    let body = '';
+
+    // Personas
+    if (data.user_personas || data.personas) {
+      const list = data.user_personas || data.personas;
+      body = list.map(p => `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="width:36px;height:36px;border-radius:50%;background:${cs.tag};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">👤</div>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text)">${p.naam_persona}</div>
+              <div style="font-size:0.78rem;color:var(--text2)">${p.demografie?.beroep ?? ''}, ${p.demografie?.locatie ?? ''}</div>
+            </div>
+          </div>
+          ${p.doelen_frustraties?.doelen?.length ? `<div style="margin-bottom:6px"><span style="font-size:0.75rem;font-weight:600;color:${cs.tagText}">DOELEN</span><div style="margin-top:4px">${p.doelen_frustraties.doelen.map(d=>`<div style="font-size:0.82rem;color:var(--text2);padding:2px 0">· ${d}</div>`).join('')}</div></div>` : ''}
+          ${p.doelen_frustraties?.frustraties?.length ? `<div><span style="font-size:0.75rem;font-weight:600;color:#f08080">FRUSTRATIES</span><div style="margin-top:4px">${p.doelen_frustraties.frustraties.map(f=>`<div style="font-size:0.82rem;color:var(--text2);padding:2px 0">· ${f}</div>`).join('')}</div></div>` : ''}
+        </div>`).join('');
+
+    // Business case
+    } else if (data.concept_naam) {
+      body = `
+        <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:10px">${data.concept_naam}</div>
+        ${renderKV('Probleem / Oplossing', data.probleem_oplossing)}
+        ${renderKV('Doelgroep', data.doelgroep_beschrijving)}
+        ${renderKV('Risico', data.belangrijkste_risico)}`;
+
+    // Generieke key-value (voor alle andere gebieden)
+    } else {
+      body = Object.entries(data).map(([k, v]) => {
+        const label = k.replace(/_/g,' ').replace(/\b\w/g, l=>l.toUpperCase());
+        if (Array.isArray(v)) {
+          return `<div style="margin-bottom:10px">
+            <div style="font-size:0.72rem;font-weight:600;color:${cs.tagText};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px">${label}</div>
+            ${v.map(item => typeof item === 'object'
+              ? `<div style="font-size:0.82rem;color:var(--text2);padding:3px 0 3px 10px;border-left:2px solid ${cs.border}">· ${Object.values(item).join(' — ')}</div>`
+              : `<div style="font-size:0.82rem;color:var(--text2);padding:2px 0">· ${item}</div>`
+            ).join('')}
+          </div>`;
+        }
+        if (typeof v === 'object' && v !== null) {
+          return `<div style="margin-bottom:10px">
+            <div style="font-size:0.72rem;font-weight:600;color:${cs.tagText};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px">${label}</div>
+            ${Object.entries(v).map(([kk,vv])=>`<div style="font-size:0.82rem;color:var(--text2);padding:2px 0"><span style="color:var(--text)">${kk.replace(/_/g,' ')}:</span> ${vv}</div>`).join('')}
+          </div>`;
+        }
+        return renderKV(label, v, cs.tagText);
+      }).join('');
+    }
+
+    return `
+      <div style="background:${cs.bg};border:1px solid ${cs.border};border-radius:14px;padding:20px 22px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border-radius:9px;background:${cs.tag};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">${cfg.icon}</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;color:var(--text)">${naam}</div>
+            <div style="font-size:0.72rem;color:${cs.tagText};text-transform:uppercase;letter-spacing:0.06em;font-weight:600">${wizState.type === 'business' ? 'Business analyse' : 'Feature analyse'}</div>
+          </div>
+        </div>
+        ${body}
+      </div>`;
+  }
+
+  function renderKV(label, value, color) {
+    if (!value) return '';
+    return `<div style="margin-bottom:10px">
+      <div style="font-size:0.72rem;font-weight:600;color:${color||'var(--teal)'};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">${label}</div>
+      <div style="font-size:0.875rem;color:var(--text2);line-height:1.65">${value}</div>
+    </div>`;
+  }
+
+  // ─── SKELETON LOADERS terwijl chips binnenkomen ───
+  function renderSkeletons(chips) {
+    return chips.map(naam => {
+      const cfg = CHIP_CONFIG[naam] || { icon:'📋', color:'purple' };
+      const cs  = COLOR_STYLES[cfg.color] || COLOR_STYLES.purple;
+      return `
+        <div id="sk-${naam.replace(/[^a-z0-9]/gi,'_')}" style="background:${cs.bg};border:1px solid ${cs.border};border-radius:14px;padding:20px 22px;margin-bottom:16px;opacity:0.6">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:${cs.tag};display:flex;align-items:center;justify-content:center;font-size:1rem">${cfg.icon}</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;color:var(--text)">${naam}</div>
+              <div style="font-size:0.72rem;color:${cs.tagText};text-transform:uppercase;letter-spacing:0.06em;font-weight:600">wordt geanalyseerd...</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <div style="height:8px;border-radius:4px;background:${cs.tag};flex:2;animation:wdot 1.4s ease-in-out infinite"></div>
+            <div style="height:8px;border-radius:4px;background:${cs.tag};flex:3;animation:wdot 1.4s ease-in-out 0.2s infinite"></div>
+            <div style="height:8px;border-radius:4px;background:${cs.tag};flex:1;animation:wdot 1.4s ease-in-out 0.4s infinite"></div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ─── HOOFDFUNCTIE: stuurt naar webhook, chips-aware ───
+  async function stuurIdee() {
+    const div     = document.getElementById('resultaat');
+    const loading = document.getElementById('wizLoading');
+    const meta    = document.getElementById('wizMeta');
+
     document.getElementById('wizSummary').innerHTML =
       `<strong>${wizState.type === 'business' ? 'Business idee' : 'Feature idee'}:</strong> ${wizState.idea.trim()}<br>` +
-      `<span style="display:inline-block;margin-top:4px">Focus: ${wizState.chips.join(' · ')}</span>`;
+      `<span style="display:inline-block;margin-top:4px">Gebieden: ${wizState.chips.join(' · ')}</span>`;
 
-    div.innerHTML = '';
-    loading.style.display = 'flex';
+    loading.style.display = 'none';
     meta.innerHTML = '';
-
-    const tool = wizState.type;
-    const idee = wizState.idea.trim();
-    const code = wizState.code;
+    div.innerHTML = renderSkeletons(wizState.chips);
 
     const bodyData = {
-      idee: idee,
-      code: code,
-      type: tool
+      idee:   wizState.idea.trim(),
+      code:   wizState.code,
+      type:   wizState.type,
+      chips:  wizState.chips
     };
 
     try {
@@ -993,58 +1118,43 @@
       });
 
       const data = await res.json();
-      loading.style.display = 'none';
 
       if (data.error) {
-        div.innerHTML = `<p style="color:#f87171;font-weight:600">${data.error}</p>`;
+        div.innerHTML = `<div class="result-card"><p style="color:#f87171;font-weight:600">${data.error}</p></div>`;
         return;
       }
 
-      // Verwerk JSON antwoord — met cleanup
-      let rawOutput = typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
-      rawOutput = rawOutput.replace(/```json/g, '').replace(/```/g, '').trim();
-      const content = JSON.parse(rawOutput);
-
-      // Render: Persona's
-      if (content.user_personas || content.personas) {
-        let html = '';
-        const pList = content.user_personas || content.personas;
-        pList.forEach(p => {
-          html += `
-            <div class="result-card">
-              <h4>👤 ${p.naam_persona}</h4>
-              <p><strong>Beroep:</strong> ${p.demografie.beroep}, ${p.demografie.locatie}</p>
-              <p><strong>Doelen:</strong> ${p.doelen_frustraties.doelen.join(', ')}</p>
-            </div>`;
-        });
-        div.innerHTML = html;
-
-      // Render: Business Case
-      } else if (content.concept_naam) {
-        div.innerHTML = `
-          <div class="result-card">
-            <h3>${content.concept_naam}</h3>
-            <p><strong>Probleem / Oplossing:</strong><br>${content.probleem_oplossing}</p>
-            <p><strong>Doelgroep:</strong><br>${content.doelgroep_beschrijving}</p>
-            <p><strong>Risico:</strong><br>${content.belangrijkste_risico}</p>
-          </div>`;
-
-      // Fallback
+      // n8n stuurt { gebieden: { "Businessmodel": {...}, "Marktgrootte": {...}, ... } }
+      let gebieden = null;
+      if (data.gebieden && typeof data.gebieden === 'object') {
+        gebieden = data.gebieden;
       } else {
-        div.innerHTML = `<div class="result-card"><pre>${JSON.stringify(content, null, 2)}</pre></div>`;
+        // fallback: probeer raw output te parsen
+        let raw = typeof data.output === 'string' ? data.output : JSON.stringify(data.output || data);
+        raw = raw.replace(/```json/g,'').replace(/```/g,'').trim();
+        try { const parsed = JSON.parse(raw); gebieden = parsed.gebieden || parsed; } catch { gebieden = null; }
       }
 
-      // Chip badges tonen
+      if (gebieden && typeof gebieden === 'object') {
+        // Render in volgorde van de gekozen chips
+        div.innerHTML = wizState.chips.map(naam => {
+          const inhoud = gebieden[naam];
+          if (!inhoud) return '';
+          return renderGebiedCard(naam, typeof inhoud === 'string' ? { toelichting: inhoud } : inhoud);
+        }).join('');
+      } else {
+        div.innerHTML = `<div class="result-card"><pre style="font-size:0.78rem;color:var(--text2)">${JSON.stringify(data,null,2)}</pre></div>`;
+      }
+
       meta.innerHTML = wizState.chips.map(c => `<span class="wiz-meta-badge">${c}</span>`).join('');
 
     } catch (e) {
-      loading.style.display = 'none';
       console.error(e);
-      div.innerHTML = `<div class="result-card"><p style="color:#f87171">Fout bij de verbinding met de consultant. Check de console voor details.</p></div>`;
+      div.innerHTML = `<div class="result-card"><p style="color:#f87171">Fout bij de verbinding. Check de console voor details.<br><small>${e.message}</small></p></div>`;
     }
   }
 
-})();
+})();;
 </script>
 
 <!-- FEATURES -->
