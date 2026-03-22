@@ -802,48 +802,132 @@
       </div>
     </div>
 
-    <!-- STAP 3 -->
+    <!-- STAP 3: SNEAK PREVIEW + VERKOOP + BEDANK -->
     <div class="wiz-panel" id="wp2" style="display:none">
-      <div style="margin-bottom:1.5rem">
-        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--teal);margin-bottom:4px;font-weight:600">Stap 3 van 3</div>
-        <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:0.4rem">Jouw resultaat</h3>
-      </div>
 
-      <!-- Summary -->
-      <div id="wizSummary" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:1.25rem;font-size:0.83rem;color:var(--text2);line-height:1.6"></div>
-
-      <!-- Output -->
-      <div id="wizOutput" style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;min-height:160px;position:relative">
-        <div id="wizLoading" style="display:flex;align-items:center;gap:10px">
-          <div style="display:flex;gap:5px">
-            <div style="width:7px;height:7px;border-radius:50%;background:var(--teal);animation:wdot 1.2s ease-in-out infinite"></div>
-            <div style="width:7px;height:7px;border-radius:50%;background:var(--teal);animation:wdot 1.2s ease-in-out 0.2s infinite"></div>
-            <div style="width:7px;height:7px;border-radius:50%;background:var(--teal);animation:wdot 1.2s ease-in-out 0.4s infinite"></div>
-          </div>
-          <span style="font-size:0.85rem;color:var(--text2)">Consultant aan het werk...</span>
+      <!-- A: LOADING STATE -->
+      <div id="wp2-loading" style="text-align:center;padding:3rem 0">
+        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:1rem">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);animation:wdot 1.2s ease-in-out infinite"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);animation:wdot 1.2s ease-in-out 0.2s infinite"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);animation:wdot 1.2s ease-in-out 0.4s infinite"></div>
         </div>
-        <div id="resultaat" style="font-size:0.875rem;line-height:1.75;color:var(--text)"></div>
+        <p style="color:var(--text2);font-size:0.9rem">Onze AI analyseert jouw idee...</p>
       </div>
 
-      <!-- Result-card styles inside output -->
+      <!-- B: SNEAK PREVIEW STATE -->
+      <div id="wp2-preview" style="display:none">
+        <div style="margin-bottom:1.25rem">
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--teal);margin-bottom:4px;font-weight:600">Stap 3 van 3 — Voorproef</div>
+          <h3 style="font-size:1.4rem;font-weight:600;margin-bottom:0.4rem">Jouw analyse is klaar</h3>
+          <p style="color:var(--text2);font-size:0.875rem">Een eerste inkijk op basis van jouw idee.</p>
+        </div>
+
+        <!-- Summary -->
+        <div id="wizSummary" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:1.25rem;font-size:0.82rem;color:var(--text2);line-height:1.6"></div>
+
+        <!-- 2 preview cards -->
+        <div id="resultaat"></div>
+
+        <!-- VERKOOPBLOK -->
+        <div id="wizSellBlock" style="margin-top:1.5rem;background:linear-gradient(135deg,rgba(124,107,242,0.12),rgba(61,219,198,0.08));border:1px solid rgba(124,107,242,0.3);border-radius:18px;padding:28px 24px;text-align:center;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,var(--accent),var(--teal),transparent)"></div>
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent2);font-weight:600;margin-bottom:0.5rem">Volledige analyse</div>
+          <h4 id="wizSellTitle" style="font-size:1.25rem;font-weight:600;margin-bottom:0.5rem;color:var(--text)">Ontgrendel alle <span id="wizChipCountSell">0</span> gebieden</h4>
+          <p style="font-size:0.875rem;color:var(--text2);max-width:420px;margin:0 auto 1.25rem">Ontvang een volledige AI-analyse van elk gekozen gebied, direct in je inbox — samengesteld door onze agent.</p>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:1.5rem">
+            <span style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:600;color:var(--text)">€9,99</span>
+            <span style="font-size:0.85rem;color:var(--text2)">eenmalig per analyse</span>
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="wizOpenCheckout()" style="width:100%;max-width:320px;justify-content:center">
+            Volledige analyse ontvangen →
+          </button>
+          <p style="font-size:0.75rem;color:var(--text3);margin-top:1rem">✓ Direct per mail &nbsp;·&nbsp; ✓ Alle <span id="wizChipCountSell2">0</span> gebieden &nbsp;·&nbsp; ✓ Geen abonnement</p>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem">
+          <button class="btn btn-outline btn-md" onclick="wizBack(2)">← Terug</button>
+          <button class="btn btn-ghost btn-md" onclick="wizRestart()">Nieuw idee</button>
+        </div>
+      </div>
+
+      <!-- C: BEDANKSCHERM -->
+      <div id="wp2-thanks" style="display:none;text-align:center;padding:2rem 0">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(61,219,198,0.12);border:1.5px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1.5rem">✓</div>
+        <h3 style="font-size:1.5rem;font-weight:600;margin-bottom:0.75rem;color:var(--text)">Bedankt, <span id="wizThanksName"></span>!</h3>
+        <p style="color:var(--text2);font-size:0.95rem;line-height:1.7;max-width:440px;margin:0 auto 0.75rem">Onze agent gaat nu voor jou aan de slag met de volledige analyse van alle <strong id="wizThanksChips" style="color:var(--text)"></strong> gebieden.</p>
+        <p style="color:var(--text2);font-size:0.875rem;margin-bottom:2rem">De resultaten worden verstuurd naar <strong id="wizThanksEmail" style="color:var(--teal)"></strong></p>
+        <button class="btn btn-outline btn-md" onclick="wizRestart()">Nieuw idee analyseren</button>
+      </div>
+
+    </div>
+
+    <!-- CHECKOUT MODAL OVERLAY -->
+    <div id="wizModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center;padding:20px">
+      <div style="background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:36px 32px;max-width:440px;width:100%;position:relative;box-shadow:0 40px 80px rgba(0,0,0,0.5)">
+        <button onclick="wizCloseCheckout()" style="position:absolute;top:16px;right:16px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;cursor:pointer;color:var(--text2);font-size:1rem;display:flex;align-items:center;justify-content:center">×</button>
+
+        <!-- Modal: formulier -->
+        <div id="modalForm">
+          <div style="text-align:center;margin-bottom:1.5rem">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent2);margin-bottom:6px;font-weight:600">Volledige analyse — €9,99</div>
+            <h4 style="font-size:1.2rem;font-weight:600;color:var(--text);margin-bottom:4px">Jouw gegevens</h4>
+            <p style="font-size:0.82rem;color:var(--text2)">We sturen de analyse direct naar jouw inbox.</p>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:1.25rem">
+            <div>
+              <label style="display:block;font-size:0.8rem;color:var(--text2);margin-bottom:5px">Voornaam</label>
+              <input type="text" id="modalNaam" placeholder="bijv. Sarah" style="width:100%;padding:10px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'" oninput="wizCheckModal()" />
+            </div>
+            <div>
+              <label style="display:block;font-size:0.8rem;color:var(--text2);margin-bottom:5px">E-mailadres</label>
+              <input type="email" id="modalEmail" placeholder="bijv. sarah@bedrijf.nl" style="width:100%;padding:10px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'" oninput="wizCheckModal()" />
+            </div>
+          </div>
+
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:1.25rem">
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px">
+              <span style="color:var(--text2)">Volledige AI-analyse</span>
+              <span style="color:var(--text);font-weight:500">€9,99</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:var(--text3)">
+              <span id="modalChipSummary"></span>
+              <span>eenmalig</span>
+            </div>
+          </div>
+
+          <button id="modalPayBtn" class="btn btn-primary btn-md" onclick="wizSimulateBetaling()" disabled style="width:100%;justify-content:center;opacity:0.5">
+            Betaal €9,99 & ontvang analyse →
+          </button>
+          <p style="text-align:center;font-size:0.75rem;color:var(--text3);margin-top:10px">🔒 Veilig afrekenen · Geen abonnement · Direct per mail</p>
+        </div>
+
+        <!-- Modal: loading na betaling -->
+        <div id="modalLoading" style="display:none;text-align:center;padding:1rem 0">
+          <div style="display:flex;gap:6px;justify-content:center;margin-bottom:1rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--accent2);animation:wdot 1.2s ease-in-out infinite"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--accent2);animation:wdot 1.2s ease-in-out 0.2s infinite"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--accent2);animation:wdot 1.2s ease-in-out 0.4s infinite"></div>
+          </div>
+          <p style="color:var(--text2);font-size:0.9rem">Betaling verwerken...</p>
+        </div>
+      </div>
+    </div>
+
+      <!-- Result-card styles -->
       <style>
         .result-card { background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;margin-bottom:14px }
-        .result-card h3 { font-family:'Fraunces',serif;font-size:1.1rem;font-weight:800;margin-bottom:0.75rem;color:var(--text) }
-        .result-card h4 { font-family:'Fraunces',serif;font-size:1rem;font-weight:700;margin-bottom:0.5rem;color:var(--text) }
+        .result-card h3 { font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;color:var(--text) }
+        .result-card h4 { font-family:'Fraunces',serif;font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--text) }
         .result-card p { font-size:0.875rem;color:var(--text2);line-height:1.65;margin-bottom:0.5rem }
         .result-card p strong { color:var(--text) }
         .result-card pre { font-size:0.78rem;color:var(--text2);overflow-x:auto;white-space:pre-wrap }
         @keyframes wdot { 0%,80%,100%{opacity:.3;transform:scale(.8)} 40%{opacity:1;transform:scale(1)} }
+        .preview-fade { position:relative; }
+        .preview-fade::after { content:''; position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(to bottom, transparent, var(--surface2)); border-radius:0 0 14px 14px; pointer-events:none; }
+        #wizModalOverlay.open { display:flex !important; }
       </style>
-
-      <!-- Chip badges -->
-      <div id="wizMeta" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:1rem"></div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;flex-wrap:wrap;gap:10px">
-        <button class="btn btn-outline btn-md" onclick="wizBack(2)">← Terug</button>
-        <button class="btn btn-primary btn-md" onclick="wizRestart()">Nieuw idee</button>
-      </div>
-    </div>
 
   </div><!-- /max-width -->
 </section>
@@ -1089,25 +1173,32 @@
     }).join('');
   }
 
-  // ─── HOOFDFUNCTIE: stuurt naar webhook, chips-aware ───
+  // ─── SNEAK PREVIEW: stuur alleen chip 1+2, toon afgekapt ───
   async function stuurIdee() {
-    const div     = document.getElementById('resultaat');
-    const loading = document.getElementById('wizLoading');
-    const meta    = document.getElementById('wizMeta');
+    const div = document.getElementById('resultaat');
 
+    // Zet summary
     document.getElementById('wizSummary').innerHTML =
-      `<strong>${wizState.type === 'business' ? 'Business idee' : 'Feature idee'}:</strong> ${wizState.idea.trim()}<br>` +
-      `<span style="display:inline-block;margin-top:4px">Gebieden: ${wizState.chips.join(' · ')}</span>`;
+      `<strong>${wizState.type === 'business' ? 'Business idee' : 'Feature idee'}:</strong> ${wizState.idea.trim().substring(0,120)}${wizState.idea.trim().length > 120 ? '...' : ''}<br>` +
+      `<span style="display:inline-block;margin-top:4px">Gekozen gebieden: ${wizState.chips.join(' · ')}</span>`;
 
-    loading.style.display = 'none';
-    meta.innerHTML = '';
-    div.innerHTML = renderSkeletons(wizState.chips);
+    // Update verkoop tellers
+    document.getElementById('wizChipCountSell').textContent  = wizState.chips.length;
+    document.getElementById('wizChipCountSell2').textContent = wizState.chips.length;
+
+    // Toon loading, verberg preview
+    document.getElementById('wp2-loading').style.display  = 'block';
+    document.getElementById('wp2-preview').style.display  = 'none';
+    document.getElementById('wp2-thanks').style.display   = 'none';
+
+    // Stuur alleen de eerste 2 chips naar n8n voor de preview
+    const previewChips = wizState.chips.slice(0, 2);
 
     const bodyData = {
-      idee:   wizState.idea.trim(),
-      code:   wizState.code,
-      type:   wizState.type,
-      chips:  wizState.chips
+      idee:  wizState.idea.trim(),
+      code:  wizState.code,
+      type:  wizState.type,
+      chips: previewChips
     };
 
     try {
@@ -1118,44 +1209,107 @@
       });
 
       const rawRes = await res.json();
+      const data   = Array.isArray(rawRes) ? rawRes[0] : rawRes;
 
-      // n8n geeft soms een array terug: [{gebieden:{...}}] — normaliseer naar object
-      const data = Array.isArray(rawRes) ? rawRes[0] : rawRes;
-
-      if (data.error) {
-        div.innerHTML = `<div class="result-card"><p style="color:#f87171;font-weight:600">${data.error}</p></div>`;
-        return;
-      }
-
-      // Haal gebieden op — ondersteunt beide response-vormen
       let gebieden = null;
       if (data.gebieden && typeof data.gebieden === 'object') {
         gebieden = data.gebieden;
       } else {
-        // Fallback: probeer raw output string te parsen
         let str = typeof data.output === 'string' ? data.output : JSON.stringify(data.output || data);
         str = str.replace(/```json/g,'').replace(/```/g,'').trim();
         try { const parsed = JSON.parse(str); gebieden = parsed.gebieden || parsed; } catch { gebieden = null; }
       }
 
+      // Render de 2 preview cards met fade/blur overlay
       if (gebieden && typeof gebieden === 'object') {
-        // Render in volgorde van de gekozen chips
-        div.innerHTML = wizState.chips.map(naam => {
+        div.innerHTML = previewChips.map(naam => {
           const inhoud = gebieden[naam];
           if (!inhoud) return '';
-          return renderGebiedCard(naam, typeof inhoud === 'string' ? { toelichting: inhoud } : inhoud);
+          const cardHtml = renderGebiedCard(naam, typeof inhoud === 'string' ? { toelichting: inhoud } : inhoud);
+          // Wrap in fade container
+          return `<div class="preview-fade" style="overflow:hidden;max-height:240px;border-radius:14px;margin-bottom:16px">${cardHtml}</div>`;
         }).join('');
       } else {
-        div.innerHTML = `<div class="result-card"><pre style="font-size:0.78rem;color:var(--text2)">${JSON.stringify(data,null,2)}</pre></div>`;
+        div.innerHTML = `<p style="color:var(--text3);font-size:0.85rem">Kon de preview niet laden.</p>`;
       }
-
-      meta.innerHTML = wizState.chips.map(c => `<span class="wiz-meta-badge">${c}</span>`).join('');
 
     } catch (e) {
       console.error(e);
-      div.innerHTML = `<div class="result-card"><p style="color:#f87171">Fout bij de verbinding. Check de console voor details.<br><small>${e.message}</small></p></div>`;
+      div.innerHTML = `<p style="color:#f87171;font-size:0.85rem">Fout bij ophalen preview: ${e.message}</p>`;
+    } finally {
+      // Altijd loading verbergen en preview tonen
+      document.getElementById('wp2-loading').style.display = 'none';
+      document.getElementById('wp2-preview').style.display = 'block';
     }
   }
+
+  // ─── CHECKOUT MODAL ───
+  window.wizOpenCheckout = function() {
+    document.getElementById('modalChipSummary').textContent =
+      `${wizState.chips.length} gebieden: ${wizState.chips.join(', ')}`;
+    document.getElementById('wizModalOverlay').classList.add('open');
+    document.getElementById('modalNaam').focus();
+  };
+
+  window.wizCloseCheckout = function() {
+    document.getElementById('wizModalOverlay').classList.remove('open');
+  };
+
+  window.wizCheckModal = function() {
+    const naam  = document.getElementById('modalNaam').value.trim();
+    const email = document.getElementById('modalEmail').value.trim();
+    const valid = naam.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const btn   = document.getElementById('modalPayBtn');
+    btn.disabled = !valid;
+    btn.style.opacity = valid ? '1' : '0.5';
+  };
+
+  // ─── GESIMULEERDE BETALING + VOLLEDIGE ANALYSE WEBHOOK ───
+  window.wizSimulateBetaling = async function() {
+    const naam  = document.getElementById('modalNaam').value.trim();
+    const email = document.getElementById('modalEmail').value.trim();
+
+    // Toon loading in modal
+    document.getElementById('modalForm').style.display    = 'none';
+    document.getElementById('modalLoading').style.display = 'block';
+
+    const bodyData = {
+      idee:  wizState.idea.trim(),
+      code:  wizState.code,
+      type:  wizState.type,
+      chips: wizState.chips,
+      naam:  naam,
+      email: email,
+      mode:  'full'
+    };
+
+    try {
+      await fetch('https://my-n8n.nl/webhook/product-consultant', {
+        method: 'POST',
+        body: JSON.stringify(bodyData),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (e) {
+      console.error('Webhook fout (niet kritiek):', e);
+    }
+
+    // Sluit modal, toon bedankscherm — ongeacht webhook resultaat
+    document.getElementById('wizModalOverlay').classList.remove('open');
+    document.getElementById('modalForm').style.display    = 'block';
+    document.getElementById('modalLoading').style.display = 'none';
+
+    // Toon bedankscherm
+    document.getElementById('wizThanksName').textContent  = naam;
+    document.getElementById('wizThanksEmail').textContent = email;
+    document.getElementById('wizThanksChips').textContent = wizState.chips.length;
+    document.getElementById('wp2-preview').style.display  = 'none';
+    document.getElementById('wp2-thanks').style.display   = 'block';
+  };
+
+  // Sluit modal bij klik buiten
+  document.getElementById('wizModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) wizCloseCheckout();
+  });
 
 })();;
 </script>
