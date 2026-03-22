@@ -1117,22 +1117,25 @@
         headers: { 'Content-Type': 'application/json' }
       });
 
-      const data = await res.json();
+      const rawRes = await res.json();
+
+      // n8n geeft soms een array terug: [{gebieden:{...}}] — normaliseer naar object
+      const data = Array.isArray(rawRes) ? rawRes[0] : rawRes;
 
       if (data.error) {
         div.innerHTML = `<div class="result-card"><p style="color:#f87171;font-weight:600">${data.error}</p></div>`;
         return;
       }
 
-      // n8n stuurt { gebieden: { "Businessmodel": {...}, "Marktgrootte": {...}, ... } }
+      // Haal gebieden op — ondersteunt beide response-vormen
       let gebieden = null;
       if (data.gebieden && typeof data.gebieden === 'object') {
         gebieden = data.gebieden;
       } else {
-        // fallback: probeer raw output te parsen
-        let raw = typeof data.output === 'string' ? data.output : JSON.stringify(data.output || data);
-        raw = raw.replace(/```json/g,'').replace(/```/g,'').trim();
-        try { const parsed = JSON.parse(raw); gebieden = parsed.gebieden || parsed; } catch { gebieden = null; }
+        // Fallback: probeer raw output string te parsen
+        let str = typeof data.output === 'string' ? data.output : JSON.stringify(data.output || data);
+        str = str.replace(/```json/g,'').replace(/```/g,'').trim();
+        try { const parsed = JSON.parse(str); gebieden = parsed.gebieden || parsed; } catch { gebieden = null; }
       }
 
       if (gebieden && typeof gebieden === 'object') {
