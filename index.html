@@ -1304,6 +1304,11 @@
     document.getElementById('wizThanksChips').textContent = wizState.chips.length;
     document.getElementById('wp2-preview').style.display  = 'none';
     document.getElementById('wp2-thanks').style.display   = 'block';
+
+    // Scroll soepel naar het bedankscherm
+    setTimeout(() => {
+      document.getElementById('wp2-thanks').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
   };
 
   // Sluit modal bij klik buiten
